@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mini Projeto Tasks</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="container">
+      <section id="auth-section" class="card">
+        <h1>Controle de Tarefas</h1>
+        <p class="subtitle">Entre para gerenciar suas tarefas protegidas.</p>
+
+        <form id="login-form" class="form-block">
+          <h2>Entrar</h2>
+          <label>
+            <span>E-mail</span>
+            <input type="email" name="email" required />
+          </label>
+          <label>
+            <span>Senha</span>
+            <input type="password" name="password" required minlength="6" />
+          </label>
+          <button type="submit">Fazer login</button>
+        </form>
+
+        <form id="register-form" class="form-block">
+          <h2>Criar conta</h2>
+          <label>
+            <span>Nome</span>
+            <input type="text" name="name" required minlength="2" />
+          </label>
+          <label>
+            <span>E-mail</span>
+            <input type="email" name="email" required />
+          </label>
+          <label>
+            <span>Senha</span>
+            <input type="password" name="password" required minlength="6" />
+          </label>
+          <button type="submit">Cadastrar</button>
+        </form>
+
+        <div id="auth-feedback" class="feedback" role="alert"></div>
+      </section>
+
+      <section id="app-section" class="card hidden">
+        <header class="app-header">
+          <div>
+            <h2>Minhas tarefas</h2>
+            <p class="subtitle">CRUD protegido por JWT</p>
+          </div>
+          <div class="user-box">
+            <span id="user-label"></span>
+            <button id="logout-btn" type="button">Sair</button>
+          </div>
+        </header>
+
+        <form id="task-form" class="form-inline">
+          <input type="hidden" name="taskId" />
+          <label>
+            <span>Titulo</span>
+            <input type="text" name="title" required maxlength="200" />
+          </label>
+          <label>
+            <span>Descricao</span>
+            <input type="text" name="description" maxlength="2000" />
+          </label>
+          <label>
+            <span>Data limite</span>
+            <input type="date" name="dueDate" />
+          </label>
+          <label>
+            <span>Prioridade</span>
+            <select name="priority">
+              <option value="low">Baixa</option>
+              <option value="medium" selected>Media</option>
+              <option value="high">Alta</option>
+            </select>
+          </label>
+          <label>
+            <span>Status</span>
+            <select name="status">
+              <option value="pending" selected>Pendente</option>
+              <option value="in_progress">Em andamento</option>
+              <option value="completed">Concluida</option>
+            </select>
+          </label>
+          <div class="buttons">
+            <button type="submit" id="task-submit">Salvar tarefa</button>
+            <button type="button" id="task-cancel" class="secondary hidden">
+              Cancelar edicao
+            </button>
+          </div>
+        </form>
+
+        <form id="filter-form" class="form-inline">
+          <label>
+            <span>Filtrar por status</span>
+            <select name="status">
+              <option value="">Todos</option>
+              <option value="pending">Pendente</option>
+              <option value="in_progress">Em andamento</option>
+              <option value="completed">Concluida</option>
+            </select>
+          </label>
+          <label>
+            <span>Filtrar por prioridade</span>
+            <select name="priority">
+              <option value="">Todas</option>
+              <option value="low">Baixa</option>
+              <option value="medium">Media</option>
+              <option value="high">Alta</option>
+            </select>
+          </label>
+          <label>
+            <span>Titulo contem</span>
+            <input type="text" name="title" />
+          </label>
+          <label>
+            <span>Data limite</span>
+            <input type="date" name="dueDate" />
+          </label>
+          <div class="buttons">
+            <button type="submit">Aplicar filtros</button>
+            <button type="button" id="clear-filters" class="secondary">
+              Limpar
+            </button>
+          </div>
+        </form>
+
+        <div id="tasks-feedback" class="feedback" role="alert"></div>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Titulo</th>
+                <th>Status</th>
+                <th>Prioridade</th>
+                <th>Data limite</th>
+                <th>Atualizado</th>
+                <th>Acoes</th>
+              </tr>
+            </thead>
+            <tbody id="tasks-table-body"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <template id="task-row-template">
+      <tr>
+        <td class="task-title"></td>
+        <td class="task-status"></td>
+        <td class="task-priority"></td>
+        <td class="task-due-date"></td>
+        <td class="task-updated"></td>
+        <td class="task-actions">
+          <button type="button" class="secondary edit-btn">Editar</button>
+          <button type="button" class="danger delete-btn">Excluir</button>
+        </td>
+      </tr>
+    </template>
+
+    <script type="module" src="app.js"></script>
+  </body>
+</html>

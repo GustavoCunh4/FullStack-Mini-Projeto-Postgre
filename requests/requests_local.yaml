@@ -1,0 +1,201 @@
+_type: export
+__export_format: 4
+__export_date: 2025-10-19T00:00:00.000Z
+__export_source: insomnia.desktop.app
+resources:
+  - _id: wrk_fsmp_local
+    _type: workspace
+    name: FullStack Mini Projeto (Local - URLs fixas)
+    scope: collection
+
+  - _id: fld_auth_local
+    _type: request_group
+    parentId: wrk_fsmp_local
+    name: Auth
+
+  - _id: fld_protected_local
+    _type: request_group
+    parentId: wrk_fsmp_local
+    name: Protected
+
+  # Register
+  - _id: req_register_success_local
+    _type: request
+    parentId: fld_auth_local
+    name: Register - success (local)
+    method: POST
+    url: "http://127.0.0.1:3000/register"
+    body:
+      mimeType: application/json
+      text: |
+        {
+          "name": "Guga Teste",
+          "email": "guga.success@example.com",
+          "password": "Guga123"
+        }
+    headers:
+      - name: Content-Type
+        value: application/json
+
+  - _id: req_register_duplicate_local
+    _type: request
+    parentId: fld_auth_local
+    name: Register - duplicate email (local)
+    method: POST
+    url: "http://127.0.0.1:3000/register"
+    body:
+      mimeType: application/json
+      text: |
+        {
+          "name": "Guga Teste",
+          "email": "guga.success@example.com",
+          "password": "OutraSenha123"
+        }
+    headers:
+      - name: Content-Type
+        value: application/json
+
+  - _id: req_register_invalid_password_local
+    _type: request
+    parentId: fld_auth_local
+    name: Register - invalid password (local)
+    method: POST
+    url: "http://127.0.0.1:3000/register"
+    body:
+      mimeType: application/json
+      text: |
+        {
+          "name": "Carol",
+          "email": "carol@example.com",
+          "password": "123"
+        }
+    headers:
+      - name: Content-Type
+        value: application/json
+
+  - _id: req_register_invalid_email_local
+    _type: request
+    parentId: fld_auth_local
+    name: Register - invalid email (local)
+    method: POST
+    url: "http://127.0.0.1:3000/register"
+    body:
+      mimeType: application/json
+      text: |
+        {
+          "name": "Bob",
+          "email": "email_invalido",
+          "password": "123456"
+        }
+    headers:
+      - name: Content-Type
+        value: application/json
+
+  - _id: req_register_malformed_local
+    _type: request
+    parentId: fld_auth_local
+    name: Register - malformed (local)
+    method: POST
+    url: "http://127.0.0.1:3000/register"
+    body:
+      mimeType: application/json
+      text: |
+        { "email": "dan@example.com" }
+    headers:
+      - name: Content-Type
+        value: application/json
+
+  # Login
+  - _id: req_login_success_local
+    _type: request
+    parentId: fld_auth_local
+    name: Login - success (local)
+    method: POST
+    url: "http://127.0.0.1:3000/login"
+    body:
+      mimeType: application/json
+      text: |
+        {
+          "email": "guga.success@example.com",
+          "password": "Guga123"
+        }
+    headers:
+      - name: Content-Type
+        value: application/json
+
+  - _id: req_login_wrong_password_local
+    _type: request
+    parentId: fld_auth_local
+    name: Login - wrong password (local)
+    method: POST
+    url: "http://127.0.0.1:3000/login"
+    body:
+      mimeType: application/json
+      text: |
+        {
+          "email": "guga.success@example.com",
+          "password": "errada123"
+        }
+    headers:
+      - name: Content-Type
+        value: application/json
+
+  - _id: req_login_invalid_email_local
+    _type: request
+    parentId: fld_auth_local
+    name: Login - invalid email (local)
+    method: POST
+    url: "http://127.0.0.1:3000/login"
+    body:
+      mimeType: application/json
+      text: |
+        {
+          "email": "nao_e_email",
+          "password": "123456"
+        }
+    headers:
+      - name: Content-Type
+        value: application/json
+
+  - _id: req_login_malformed_local
+    _type: request
+    parentId: fld_auth_local
+    name: Login - malformed (local)
+    method: POST
+    url: "http://127.0.0.1:3000/login"
+    body:
+      mimeType: application/json
+      text: |
+        { "email": "falta_senha@example.com" }
+    headers:
+      - name: Content-Type
+        value: application/json
+
+  # Protected
+  - _id: req_protected_valid_local
+    _type: request
+    parentId: fld_protected_local
+    name: Protected - with valid token (local)
+    method: GET
+    url: "http://127.0.0.1:3000/protected"
+    authentication:
+      type: bearer
+      token: "{% response 'body', 'req_login_success_local', '$.token', 'NO_TOKEN' %}"
+
+  - _id: req_protected_no_token_local
+    _type: request
+    parentId: fld_protected_local
+    name: Protected - without token (local)
+    method: GET
+    url: "http://127.0.0.1:3000/protected"
+
+  - _id: req_protected_invalid_token_local
+    _type: request
+    parentId: fld_protected_local
+    name: Protected - with invalid token (local)
+    method: GET
+    url: "http://127.0.0.1:3000/protected"
+    headers:
+      - name: Authorization
+        value: Bearer INVALID_TOKEN_123
+

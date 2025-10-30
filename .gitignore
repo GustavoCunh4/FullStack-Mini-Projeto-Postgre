@@ -1,0 +1,28 @@
+# Dependências
+node_modules/
+
+# Build compilado
+dist/
+
+# Arquivos de ambiente
+.env
+
+# Logs
+logs
+*.log
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Cache do editor
+.vscode/
+.idea/
+.vercel
+
+
+#Ignore vscode AI rules
+.github\instructions\codacy.instructions.md
+
+# Temp files
+tmp_*.yaml
