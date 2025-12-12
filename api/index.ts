@@ -1,49 +1,55 @@
 import 'dotenv/config';
-import serverless from 'serverless-http';
 import app from '../src/app';
 import { connectDB } from '../src/database/connection';
 
 let conn: Promise<void> | null = null;
 
-const handler = serverless(app);
-
-export default async (event: any, context: any) => {
-  // Log simples para acompanhar a rota recebida na edge
-  console.log('lambda:event', {
-    path: event?.path,
-    rawUrl: event?.rawUrl,
-    method: event?.httpMethod,
-    routeKey: event?.routeKey
-  });
-
-  const rawUrl = event?.rawUrl as string | undefined;
-  const path = event?.path as string | undefined;
-
-  if (path === '/healthz' || rawUrl?.endsWith('/healthz')) {
-    return {
-      statusCode: 200,
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ ok: true, env: process.env.NODE_ENV })
-    };
+async function ensureDatabaseConnection() {
+  if (!conn) {
+    conn = connectDB()
+      .then(() => undefined)
+      .catch((err) => {
+        conn = null;
+        throw err;
+      });
   }
 
-  if (!conn) {
-    conn = connectDB().then(() => undefined);
+  await conn;
+}
+
+export default async function handler(req: any, res: any) {
+  // Log simples para acompanhar a rota recebida pela funcao serverless
+  console.log('vercel:req', { method: req?.method, url: req?.url });
+
+  const url = req?.url || '';
+
+  if (url.includes('healthz')) {
+    res.statusCode = 200;
+    res.setHeader('content-type', 'application/json');
+    res.end(JSON.stringify({ ok: true, env: process.env.NODE_ENV }));
+    return;
+  }
+
+  if (url.includes('favicon.ico')) {
+    res.statusCode = 204;
+    res.end();
+    return;
   }
 
   try {
-    await conn;
+    await ensureDatabaseConnection();
   } catch (err: any) {
-    conn = null;
-    return {
-      statusCode: 503,
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({
+    console.error('db-connection-error', err?.message || err);
+    res.statusCode = 503;
+    res.setHeader('content-type', 'application/json');
+    res.end(
+      JSON.stringify({
         error: 'Falha ao conectar ao banco',
         detail: err?.message || String(err)
       })
-    };
+    );
+    return;
   }
 
-  return handler(event, context);
-};
+  return app(req, res);
+}

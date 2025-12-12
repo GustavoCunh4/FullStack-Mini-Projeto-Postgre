@@ -22,6 +22,13 @@ function shouldUseSSL() {
   return value === 'true' || value === '1';
 }
 
+function parseNumberEnv(key: string, fallback: number) {
+  const raw = process.env[key];
+  if (!raw) return fallback;
+  const parsed = Number(raw);
+  return Number.isFinite(parsed) && parsed >= 0 ? parsed : fallback;
+}
+
 function shouldRejectUnauthorized() {
   const value = (process.env.PG_SSL_REJECT_UNAUTHORIZED || '').toLowerCase();
   if (!value) return true;
@@ -95,8 +102,14 @@ export async function connectDB(): Promise<Pool> {
   logger.info(`Ambiente: ${env}`);
   logger.info(`Conectando no PostgreSQL com URI: ${maskUri(uri)}`);
 
+  const connectionTimeoutMillis = parseNumberEnv('PG_CONNECTION_TIMEOUT_MS', 8000);
+  const idleTimeoutMillis = parseNumberEnv('PG_IDLE_TIMEOUT_MS', 30000);
+
   const createdPool = new Pool({
     connectionString: uri,
+    connectionTimeoutMillis,
+    idleTimeoutMillis,
+    keepAlive: true,
     ssl: shouldUseSSL()
       ? { rejectUnauthorized: shouldRejectUnauthorized() }
       : undefined
